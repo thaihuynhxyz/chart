@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">chart</string>
+    <string name="ring_chart">Ring Chart:</string>
 </resources>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -11,22 +10,22 @@
         android:id="@+id/ringText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ring Chart:"
-        app:layout_constraintBottom_toBottomOf="@+id/ringChart"
+        android:text="@string/ring_chart"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/ringChart"
-        app:layout_constraintTop_toTopOf="@+id/ringChart" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <xyz.thaihuynh.chart.ring.RingChart
         android:id="@+id/ringChart"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:color="@color/colorAccent"
+        app:goal="100"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/ringText" />
-
-    <xyz.thaihuynh.chart.OverlayWithHoleImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:thickness="24dp" />
 </android.support.constraint.ConstraintLayout>

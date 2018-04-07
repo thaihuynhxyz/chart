@@ -3,26 +3,24 @@ package xyz.thaihuynh.chart.ring
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import java.util.*
 
-import java.util.ArrayList
-import android.widget.ImageView
 
-class RingChart : ImageView {
+class RingChart : View {
 
     private val mData = ArrayList<Item>()
 
     private var mTotal = 0.0f
     private var mGoal: Int = 0
     private var mColor: Int = 0
-    private var mWidth: Float = 0.toFloat()
+    private var mThickness: Float = 0.toFloat()
 
     private var mPiePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val mClearPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private lateinit var mClearPaint: Paint
 
     private var mDetector: GestureDetector? = null
     private var mListener: View.OnClickListener? = null
@@ -71,9 +69,9 @@ class RingChart : ImageView {
             //
             // The R.styleable.StatsChart_* constants represent the index for
             // each custom attribute in the R.styleable.StatsChart array.
-            mGoal = a.getInteger(R.styleable.RingChart_total, 0)
+            mGoal = a.getInteger(R.styleable.RingChart_goal, 0)
             mColor = a.getColor(R.styleable.RingChart_color, 0)
-            mWidth = a.getDimension(R.styleable.RingChart_thickness, resources.getDimension(R.dimen.dp8))
+            mThickness = a.getDimension(R.styleable.RingChart_thickness, (context.resources.displayMetrics.density * 8))
         } finally {
             // release the TypedArray so that it can be reused.
             a.recycle()
@@ -151,21 +149,26 @@ class RingChart : ImageView {
      * called from both constructors.
      */
     private fun init() {
+        setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
         // Set up the paint for the pie slices
         mPiePaint.style = Paint.Style.FILL
-        mClearPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.ADD)
-        mClearPaint.color = 0xFFFFFFFF.toInt()
+        mClearPaint = Paint(mPiePaint)
+        mClearPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
 
         // Create a gesture detector to handle onTouch messages
         mDetector = GestureDetector(context, GestureListener())
 
         // In edit mode it's nice to have some demo data, so add that here.
         if (this.isInEditMode) {
-            val context = context
-            addItem(1234f, ContextCompat.getColor(context, android.R.color.holo_red_dark))
-            addItem(123f, ContextCompat.getColor(context, android.R.color.holo_orange_dark))
-            addItem(12f, ContextCompat.getColor(context, android.R.color.holo_green_dark))
-            if (mGoal == 0) mGoal = 2345
+            val random = Random()
+            val num1 = random.nextFloat() * 100
+            val num2 = random.nextFloat() * (100 - num1)
+            val num3 = random.nextFloat() * (100 - num1 - num2)
+            addItem(num1, Color.RED)
+            addItem(num2, Color.GREEN)
+            addItem(num3, Color.BLUE)
+            if (mGoal == 0) mGoal = 100
         }
     }
 
@@ -175,6 +178,7 @@ class RingChart : ImageView {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         for (it in mData) {
             mPiePaint.color = it.color
             if (it.endAngle > it.startAngle) {
@@ -187,13 +191,13 @@ class RingChart : ImageView {
 
         if (mTotal == 0f || mTotal < mGoal) {
             mPiePaint.color = mColor
-            val endAngle : Float = if (mData.isEmpty() || mTotal == 0f) -90f else mData[mData.size - 1].endAngle
+            val endAngle: Float = if (mData.isEmpty() || mTotal == 0f) -90f else mData[mData.size - 1].endAngle
             if (270f > endAngle) {
                 canvas.drawArc(mBounds!!, endAngle, 270f - endAngle, true, mPiePaint)
             }
         }
 
-        canvas.drawCircle(mBounds!!.centerX(), mBounds!!.centerY(), mBounds!!.width() / 2 - mWidth, mClearPaint)
+        canvas.drawCircle(mBounds!!.centerX(), mBounds!!.centerY(), mBounds!!.width() / 2 - mThickness, mClearPaint)
     }
 
     /**
@@ -225,7 +229,7 @@ class RingChart : ImageView {
                 val r = (measuredWidth / 2).toFloat()
 
                 val distance = (x - r) * (x - r) + (y - r) * (y - r)
-                if (/*distance > (r - 2 * mWidth) * (r - 2 * mWidth) && */distance < (r + mWidth) * (r + mWidth)) {
+                if (distance > (r - 2 * mThickness) * (r - 2 * mThickness) && distance < (r + mThickness) * (r + mThickness)) {
                     mListener!!.onClick(this@RingChart)
                 }
             }
