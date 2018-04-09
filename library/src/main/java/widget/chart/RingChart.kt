@@ -14,16 +14,16 @@ class RingChart : View {
 
     private val mData = ArrayList<Item>()
 
-    private var mTotal = 0.0f
+    private var mTotal = 0f
     private var mGoal: Int = 0
     private var mColor: Int = 0
-    private var mThickness: Float = 0.toFloat()
+    private var mThickness: Float = 0f
 
     private var mPiePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private lateinit var mClearPaint: Paint
 
     private var mDetector: GestureDetector? = null
-    private var mListener: View.OnClickListener? = null
+    private var mListener: OnItemClickListener? = null
 
     private var mBounds: RectF? = null
 
@@ -88,7 +88,7 @@ class RingChart : View {
      * @param value The value of this item.
      * @param color The ARGB color of the pie slice associated with this item.
      */
-    fun addItem(value: Float, color: Int) {
+    fun addData(value: Float, color: Int) {
         val it = Item()
         it.color = color
         it.value = value
@@ -98,12 +98,17 @@ class RingChart : View {
         mData.add(it)
     }
 
+    fun setData(data: List<Pair<Float, Int>>) {
+        clearData()
+        for (item in data) addData(item.first, item.second)
+    }
+
     fun clearData() {
         mData.clear()
         mTotal = 0f
     }
 
-    fun setOnRingClickListener(listener: View.OnClickListener) {
+    fun setOnRingClickListener(listener: OnItemClickListener) {
         mListener = listener
     }
 
@@ -116,11 +121,13 @@ class RingChart : View {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
+        val right = w.toFloat()
+        val bottom = h.toFloat()
         if (mBounds == null) {
-            mBounds = RectF(0f, 0f, w.toFloat(), h.toFloat())
+            mBounds = RectF(0f, 0f, right, bottom)
         } else {
-            mBounds!!.right = w.toFloat()
-            mBounds!!.bottom = h.toFloat()
+            mBounds!!.right = right
+            mBounds!!.bottom = bottom
         }
 
         notifyDataSetChanged()
@@ -149,7 +156,7 @@ class RingChart : View {
      * called from both constructors.
      */
     private fun init() {
-        setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 
         // Set up the paint for the pie slices
         mPiePaint.style = Paint.Style.FILL
@@ -165,9 +172,9 @@ class RingChart : View {
             val num1 = random.nextFloat() * 100
             val num2 = random.nextFloat() * (100 - num1)
             val num3 = random.nextFloat() * (100 - num1 - num2)
-            addItem(num1, Color.RED)
-            addItem(num2, Color.GREEN)
-            addItem(num3, Color.BLUE)
+            addData(num1, Color.RED)
+            addData(num2, Color.GREEN)
+            addData(num3, Color.BLUE)
             if (mGoal == 0) mGoal = 100
         }
     }
@@ -204,14 +211,17 @@ class RingChart : View {
      * Maintains the state for a data item.
      */
     private inner class Item {
-        internal var value: Float = 0.toFloat()
+        internal var value: Float = 0f
         internal var color: Int = 0
 
         // computed values
-        internal var startAngle: Float = 0.toFloat()
-        internal var endAngle: Float = 0.toFloat()
+        internal var startAngle: Float = 0f
+        internal var endAngle: Float = 0f
     }
 
+    interface OnItemClickListener {
+        fun onItemClick(parent: View, position: Int)
+    }
     /**
      * Extends [GestureDetector.SimpleOnGestureListener] to provide custom gesture
      * processing.
@@ -230,7 +240,14 @@ class RingChart : View {
 
                 val distance = (x - r) * (x - r) + (y - r) * (y - r)
                 if (distance > (r - 2 * mThickness) * (r - 2 * mThickness) && distance < (r + mThickness) * (r + mThickness)) {
-                    mListener!!.onClick(this@RingChart)
+                    val rad = Math.atan((y / x).toDouble())
+                    for (item in mData) {
+                        if(rad >= item.startAngle && rad <= item.endAngle) {
+                            mListener!!.onItemClick(this@RingChart, mData.indexOf(item))
+                            return super.onSingleTapUp(e)
+                        }
+                    }
+                    mListener!!.onItemClick(this@RingChart, mData.size)
                 }
             }
             return super.onSingleTapUp(e)
