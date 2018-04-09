@@ -1,4 +1,4 @@
-package xyz.thaihuynh.chart
+package thaihuynh.chart
 
 import org.junit.Test
 

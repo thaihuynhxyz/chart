@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="xyz.thaihuynh.example.chart.MainActivity">
 
     <TextView
         android:id="@+id/ringText"
@@ -16,7 +16,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <xyz.thaihuynh.chart.ring.RingChart
+    <widget.chart.RingChart
         android:id="@+id/ringChart"
         android:layout_width="0dp"
         android:layout_height="0dp"

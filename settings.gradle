@@ -1,1 +1,1 @@
-include ':app', ':ring'
+include ':app', ':library'

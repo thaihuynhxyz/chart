@@ -1,4 +1,4 @@
-package xyz.thaihuynh.chart
+package xyz.thaihuynh.example.chart
 
 import android.graphics.Color
 import android.os.Bundle
@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        ringChart.setGoal(100)
         randomChart()
         ringChart.setOnRingClickListener(View.OnClickListener { randomChart() })
     }

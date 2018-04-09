@@ -1,4 +1,4 @@
-package xyz.thaihuynh.chart.ring
+package widget.chart
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,8 +7,8 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import java.util.*
-
+import java.util.Random
+import kotlin.collections.ArrayList
 
 class RingChart : View {
 
