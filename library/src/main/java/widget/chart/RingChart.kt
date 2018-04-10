@@ -101,6 +101,7 @@ class RingChart : View {
     fun setData(data: List<Pair<Float, Int>>) {
         clearData()
         for (item in data) addData(item.first, item.second)
+        notifyDataSetChanged()
     }
 
     fun clearData() {
@@ -222,6 +223,7 @@ class RingChart : View {
     interface OnItemClickListener {
         fun onItemClick(parent: View, position: Int)
     }
+
     /**
      * Extends [GestureDetector.SimpleOnGestureListener] to provide custom gesture
      * processing.
@@ -234,15 +236,18 @@ class RingChart : View {
 
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             if (mListener != null) {
-                val x = e.x
-                val y = e.y
                 val r = (measuredWidth / 2).toFloat()
+                val x = e.x - r
+                val y = e.y - r
 
-                val distance = (x - r) * (x - r) + (y - r) * (y - r)
+                val distance = x * x + y * y
                 if (distance > (r - 2 * mThickness) * (r - 2 * mThickness) && distance < (r + mThickness) * (r + mThickness)) {
-                    val rad = Math.atan((y / x).toDouble())
+                    var degrees = Math.toDegrees(Math.atan((y / x).toDouble()))
+                    if (x < 0) {
+                        degrees += 180
+                    }
                     for (item in mData) {
-                        if(rad >= item.startAngle && rad <= item.endAngle) {
+                        if (degrees >= item.startAngle && degrees <= item.endAngle) {
                             mListener!!.onItemClick(this@RingChart, mData.indexOf(item))
                             return super.onSingleTapUp(e)
                         }
