@@ -1,4 +1,4 @@
-package xyz.thaihuynh.chart.ring;
+package widget.chart;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

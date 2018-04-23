@@ -1,4 +1,4 @@
-package thaihuynh.chart
+package xyz.thaihuynh.example.chart
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

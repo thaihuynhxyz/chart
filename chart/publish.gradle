@@ -1,0 +1,86 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    // This configuration will result in:
+    // compile '<groupId>:<artifactId>:<libVersion>'
+    groupId = 'xyz.thaihuynh' // package name of the project
+    artifactId = "chart" // module name of the library
+    libVersion = "1.0.0"
+}
+
+version = libVersion
+group = groupId
+
+bintray {
+    user = ''
+    key = ''
+    configurations = ['archives']
+    publish true
+    override = true
+    pkg {
+        repo = 'maven'
+        name = 'xyz.thaihuynh:chart'
+        userOrg = 'thaihuynh'
+        description = "A chart library"
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/thaihuynhxyz/chart.git'
+        version {
+            name = this.version
+            desc = "chart ${this.version}"
+            released = new Date()
+            vcsTag = this.version
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId groupId
+            artifactId artifactId
+            version libVersion
+            name artifactId // pom.project.name must be same as bintray.pkg.name
+        }
+    }
+}
+
+//just copy paste the lines below
+if (project.hasProperty("kotlin")) { //Kotlin libraries
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(type: Javadoc, dependsOn: dokka) {
+
+    }
+} else if (project.hasProperty("android")) {
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+} else { // Java libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+    // options.encoding = 'UTF-8'
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}

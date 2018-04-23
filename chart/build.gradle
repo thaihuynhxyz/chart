@@ -1,11 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-
-ext {
-    PUBLISH_GROUP_ID = 'xyz.thaihuynh'
-    PUBLISH_ARTIFACT_ID = 'chart'
-    PUBLISH_VERSION = '1.0.0'
-}
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion 27
@@ -16,7 +13,6 @@ android {
         versionName "1.0.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -27,16 +23,17 @@ android {
     }
 }
 
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-}
-
-repositories {
-    mavenCentral()
 }
 
 apply from: 'publish.gradle'
