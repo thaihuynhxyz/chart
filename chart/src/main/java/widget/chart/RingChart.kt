@@ -85,28 +85,20 @@ class RingChart : View {
      * size is proportional to the item's value. As new items are added, the size of each
      * existing slice is recalculated so that the proportions remain correct.
      *
-     * @param value The value of this item.
-     * @param color The ARGB color of the pie slice associated with this item.
+     * @param item The ring slice item
      */
-    fun addData(value: Float, color: Int) {
-        val it = Item()
-        it.color = color
-        it.value = value
-
-        mTotal += value
-
-        mData.add(it)
+    fun addData(item: Item) {
+        mData.add(item)
     }
 
-    fun setData(data: List<Pair<Float, Int>>) {
+    fun setData(data: List<Item>) {
         clearData()
-        for (item in data) addData(item.first, item.second)
+        data.forEach { addData(it) }
         notifyDataSetChanged()
     }
 
     fun clearData() {
         mData.clear()
-        mTotal = 0f
     }
 
     fun setOnRingClickListener(listener: OnItemClickListener) {
@@ -141,7 +133,7 @@ class RingChart : View {
         // When the data changes, we have to recalculate
         // all of the angles.
         var currentAngle = -90f
-
+        mTotal = mData.sumByDouble { it.value.toDouble() }.toFloat()
         val total = Math.max(mTotal, mGoal.toFloat())
         for (it in mData) {
             it.startAngle = currentAngle
@@ -173,9 +165,9 @@ class RingChart : View {
             val num1 = random.nextFloat() * 100
             val num2 = random.nextFloat() * (100 - num1)
             val num3 = random.nextFloat() * (100 - num1 - num2)
-            addData(num1, Color.RED)
-            addData(num2, Color.GREEN)
-            addData(num3, Color.BLUE)
+            addData(Item(num1, Color.RED))
+            addData(Item(num2, Color.GREEN))
+            addData(Item(num3, Color.BLUE))
             if (mGoal == 0) mGoal = 100
         }
     }
@@ -211,9 +203,7 @@ class RingChart : View {
     /**
      * Maintains the state for a data item.
      */
-    private inner class Item {
-        internal var value: Float = 0f
-        internal var color: Int = 0
+    class Item(var value: Float, var color: Int) {
 
         // computed values
         internal var startAngle: Float = 0f
