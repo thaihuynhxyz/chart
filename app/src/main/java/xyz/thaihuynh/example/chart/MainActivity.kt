@@ -33,24 +33,23 @@ class MainActivity : AppCompatActivity() {
             override fun onItemClick(parent: View, position: Int) {
                 Log.d("MainActivity", "onItemClick: position=$position")
                 if (position < mData.size) {
-                    val total = mData.sumByDouble { it.value.toDouble() }.toFloat()
-                    mData[position].value = random.nextFloat() * (100 - (total - mData[position].value))
+                    mData[position].value = random.nextFloat() * (100 - (getTotal() - mData[position].value))
                     ringChart.notifyDataSetChanged()
                 }
             }
         })
 
         addItem.setOnClickListener {
-            val item = RingChart.Item(random.nextFloat() * (100 - mData.sumByDouble { it.value.toDouble() }.toFloat()), random.nextInt())
-            mData.add(item)
+            val item = RingChart.Item(random.nextFloat() * (100 - getTotal()), random.nextInt())
             ringChart.addData(item)
-            ringChart.notifyDataSetChanged()
         }
 
         clear.setOnClickListener {
-            mData.clear()
             ringChart.clearData()
-            ringChart.notifyDataSetChanged()
         }
+    }
+
+    private fun getTotal(): Float {
+        return mData.sumByDouble { it.value.toDouble() }.toFloat()
     }
 }

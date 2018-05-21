@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
 
 class RingChart : View {
 
-    private val mData = ArrayList<Item>()
+    private var mData = ArrayList<Item>()
 
     private var mTotal = 0f
     private var mGoal: Int = 0
@@ -89,16 +89,17 @@ class RingChart : View {
      */
     fun addData(item: Item) {
         mData.add(item)
+        notifyDataSetChanged()
     }
 
-    fun setData(data: List<Item>) {
-        clearData()
-        data.forEach { addData(it) }
+    fun setData(data: ArrayList<Item>) {
+        mData = data
         notifyDataSetChanged()
     }
 
     fun clearData() {
         mData.clear()
+        notifyDataSetChanged()
     }
 
     fun setOnRingClickListener(listener: OnItemClickListener) {
